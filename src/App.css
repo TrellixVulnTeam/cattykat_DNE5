@@ -1,0 +1,42 @@
+/*.App {
+  text-align: center;
+}*/
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+  text-align: center;
+}
+
+.App-header {
+  background-color: #222;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+#uploader {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 50%;
+  margin-bottom: 10px;
+}
+
+.card {
+  margin: 10px;
+  height: 375px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 10px 10px 5px #888888;
+}
+
+.card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
