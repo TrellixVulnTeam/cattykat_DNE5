@@ -1,8 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { Router, browserHistory } from 'react-router';
+import ReduxThunk from 'redux-thunk';
 import firebase from 'firebase';
-import App from './App';
+import reducers from './reducers';
+import routes from './routes';
 import './index.css';
+
+import App from './components/App';
+
 
   // Initialize Firebase
 const config = {
@@ -15,7 +23,11 @@ const config = {
 };
 firebase.initializeApp(config);
 
+const createStoreWithMiddleware = applyMiddleware(ReduxThunk)(createStore);
+
 ReactDOM.render(
-  <App />,
+  <Provider store={createStoreWithMiddleware(reducers)}>
+    <App />
+  </Provider>,
   document.getElementById('root')
 );
