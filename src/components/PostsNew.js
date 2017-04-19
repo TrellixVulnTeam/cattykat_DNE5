@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import FileUploader from 'react-firebase-file-uploader';
 import firebase from 'firebase';
 
@@ -12,9 +13,7 @@ class PostsNew extends Component {
             progress: 0,
             catImageFilename: '',
             imageURL: '',
-            userDisplayName: '',
-            userPhotoURL: '',
-            userToken: '',
+            imageFile: '',
             isLoggedIn: '',
             showImageURL: true,
             allPosts: []
@@ -29,13 +28,22 @@ class PostsNew extends Component {
             category,
             catImageFilename,
             imageURL,
-            userDisplayName,
-            userPhotoURL
+            imageFile
         } = this.state;
 
-        // firebase.storage().ref.put('images').child(`${firebase.auth().currentUser.uid
-        // }/uploads/`).getDownloadURL().then(url => {   this.setState({imageURL: url
-        // }); });
+        const { userDisplayName, userPhotoURL } = this.props;
+
+        const token = Math.random().toString(36).slice(-15);
+
+        const storageRef = firebase.storage().ref('new_cats').child(`${firebase.auth().currentUser.uid}/tmp/${token}${catImageFilename}`)
+
+        storageRef.put(imageFile)
+            .then(snapshot => {
+                this.setState({
+                    imageURL: snapshot.downloadURL
+                });
+            });
+            
 
         firebase
             .database()
@@ -74,34 +82,28 @@ class PostsNew extends Component {
         this.setState({category: event.target.value});
     }
 
-    handleUploadStart = () => this.setState({isUploading: true, progress: 0});
-
-    handleProgress = (progress) => this.setState({progress});
-
-    handleUploadError = (error) => {
-        this.setState({isUploading: false});
-        console.error(error);
-    }
-
-    handleUploadSuccess = (filename) => {
-
-        this.setState({catImageFilename: filename, progress: 100, isUploading: false});
-        firebase
-            .storage()
-            .ref('images')
-            .child(`${firebase.auth().currentUser.uid}/tmp/`)
-            .getDownloadURL()
-            .then(url => {
-                this.setState({imageURL: url, showImageURL: false})
-            });
-    };
-
     handleSignOut() {
         // Sign out of Firebase.
         firebase
             .auth()
             .signOut();
         this.setState({isLoggedIn: false})
+    }
+
+    handleFile(e){ 
+        e.preventDefault();
+
+        let reader = new FileReader();
+        let file = e.target.files[0];
+
+        reader.onloadend = () => {
+            this.setState({
+                imageFile: file,
+                imageURL: reader.result,
+                showImageURL: false
+            });
+        }
+        reader.readAsDataURL(file)
     }
 
     showImageURLInput() {
@@ -149,18 +151,8 @@ class PostsNew extends Component {
                         }}
                         src={this.state.imageURL}/>
                     }
-                    <FileUploader
-                        accept="image/*"
-                        name="catImageFilename"
-                        randomizeFilename
-                        storageRef={firebase
-                        .storage()
-                        .ref('images')
-                        .child(`${firebase.auth().currentUser}/tmp/`)}
-                        onUploadStart={this.handleUploadStart}
-                        onUploadError={this.handleUploadError}
-                        onUploadSuccess={this.handleUploadSuccess}
-                        onProgress={this.handleProgress}/> {this.showImageURLInput()}
+                    <input type="file" onChange={(e) => this.handleFile(e)} />
+                    {this.showImageURLInput()}
                     <div className="form-group">
                         <label htmlFor="title">Title:
                         </label>
@@ -192,4 +184,19 @@ class PostsNew extends Component {
     }
 }
 
-export default PostsNew;
+const mapStateToProps = (state) => {
+  const {
+    userDisplayName,
+    userPhotoURL,
+    isLoggedIn
+  } = state.auth;
+
+  return {
+    userDisplayName,
+    userPhotoURL,
+    isLoggedIn
+  }
+}
+
+
+export default connect(mapStateToProps, null)(PostsNew);
