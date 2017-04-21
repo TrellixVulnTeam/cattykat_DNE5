@@ -33,18 +33,6 @@ class PostsNew extends Component {
 
         const { userDisplayName, userPhotoURL } = this.props;
 
-        const token = Math.random().toString(36).slice(-15);
-
-        const storageRef = firebase.storage().ref('new_cats').child(`${firebase.auth().currentUser.uid}/tmp/${token}${catImageFilename}`)
-
-        storageRef.put(imageFile)
-            .then(snapshot => {
-                this.setState({
-                    imageURL: snapshot.downloadURL
-                });
-            });
-            
-
         firebase
             .database()
             .ref(`/users/${currentUser.uid}/posts`)
@@ -93,17 +81,19 @@ class PostsNew extends Component {
     handleFile(e){ 
         e.preventDefault();
 
-        let reader = new FileReader();
         let file = e.target.files[0];
+        this.setState({ imageFile: file });
 
-        reader.onloadend = () => {
-            this.setState({
-                imageFile: file,
-                imageURL: reader.result,
-                showImageURL: false
-            });
-        }
-        reader.readAsDataURL(file)
+        let downloadURL = '';
+
+        const { currentUser } = firebase.auth();
+
+        this.setState({ catImageFilename: file.name });
+        const storageRef = firebase.storage().ref('images' + file.name)
+        
+        storageRef.put(file).then((snapshot) =>
+            this.setState({ imageURL: snapshot.downloadURL, showImageURL: false })
+        );
     }
 
     showImageURLInput() {

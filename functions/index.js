@@ -24,20 +24,20 @@ exports.getData = functions.https.onRequest((request, response) => {
 });
 
 // exports.getImageLabel = functions.https.onRequest((req, res) => {
-exports.getImageLabelV2 = functions.storage.object().onChange(event => {
+// exports.getImageLabelV2 = functions.storage.object().onChange(event => {
 
-    const filePath = event.data.name;
-    console.log(filePath);
-    // The name of the image file to annotate
-    // const fileName = 'http://artforcatssake.org/clients/20295/images/slideshows/63748/16c_vet_home_slide02.jpg';
-        // Performs label detection on the image file
-    visionClient.detectLabels(filePath)
-    .then((results) => {
-        const labels = results[0];
-        console.log(labels);
+//     const filePath = event.data.name;
+//     console.log(filePath);
+//     // The name of the image file to annotate
+//     // const fileName = 'http://artforcatssake.org/clients/20295/images/slideshows/63748/16c_vet_home_slide02.jpg';
+//         // Performs label detection on the image file
+//     visionClient.detectLabels(filePath)
+//     .then((results) => {
+//         const labels = results[0];
+//         console.log(labels);
 
-        // console.log('Labels:');
-        // labels.forEach((label) => console.log(label));
-        // res.send(labels);
-    });
-});
+//         // console.log('Labels:');
+//         // labels.forEach((label) => console.log(label));
+//         // res.send(labels);
+//     });
+// });
